@@ -5,12 +5,12 @@ description: Design a feature, refactor, or bugfix before implementing. Use when
 
 # briskly:plan
 
-Calibrated grill (one question at a time, codebase-first, recommended answers paired) produces a reviewable `design.md`. An auto plan-coherence review runs immediately on the artifact. The user reads, approves, and manually invokes `briskly:execute`. The handoff is the single human gate that protects against runaway loops building the wrong thing.
+A calibrated question pass (one question at a time, codebase-first, recommended answers paired) produces a reviewable `design.md`. An auto plan-coherence review runs immediately on the artifact. The user reads, approves, and manually invokes `briskly:execute`. The handoff is the single human gate that protects against runaway loops building the wrong thing.
 
 ## Flow
 
 1. **Read context.** Cwd state, recent git commits (skip with a one-line warning if the cwd is not a git repo — briskly still operates), any existing `.briskly/` artifacts (especially research files), the user's invocation message.
-2. **Calibrated grill.** Ask one question at a time. Each question paired with a recommended answer. Codebase-first: if a question can be answered by reading code, read it instead of asking. Grill load scales inversely with context provided — full grill from a one-liner; near-zero grill when the user provides a complete design paragraph.
+2. **Calibrated question pass.** Ask one question at a time. Each question paired with a recommended answer. Codebase-first: if a question can be answered by reading code, read it instead of asking. Question intensity scales inversely with context provided — a full pass from a one-liner; no further questions when the user provides a complete design paragraph.
 3. **Approach selection.** Once scope is clear, propose 2–3 approaches with tradeoffs. Lead with your recommendation. User picks.
 4. **Author design.md straight through.** No per-section approval interruptions. Write to `.briskly/sessions/<YYYY-MM-DD-slug>/design.md` (create the directory if needed).
 5. **Auto plan-coherence review.** Dispatch a subagent with `prompts/plan-coherence-reviewer.md` filled in (`{{SPEC_PATH}}` replaced with the actual path).
@@ -19,16 +19,16 @@ Calibrated grill (one question at a time, codebase-first, recommended answers pa
    - `plan-review: <M> blocking issue(s) 🚨 <first blocker>` (when blockers exist)
 7. **Present to user.** File path + 2-3 sentence summary. **Do NOT auto-invoke execute** — the user must explicitly run `/briskly:execute`.
 
-## Calibrated grill — heuristic
+## Calibrated questions — heuristic
 
-| Context provided in invocation | Grill load |
+| Context provided in invocation | Question intensity |
 |---|---|
-| Empty or one-line | Full grill: problem framing, approach options, AC, edges |
-| Partial (problem stated, no approach) | Grill only on the gaps |
-| Complete design paragraph | No grill — draft directly |
+| Empty or one-line | Full pass: problem framing, approach options, AC, edges |
+| Partial (problem stated, no approach) | Ask only on the gaps |
+| Complete design paragraph | No further questions — draft directly |
 | Codebase-answerable question | Read the code instead of asking |
 
-The reason this matters: every grill question is a user touchpoint, and briskly's whole pitch is fewer touchpoints than full superpowers ceremony. More upfront context from the user (or from the codebase) means fewer questions later. If the user already provided the design, asking it back at them is friction without value.
+The reason this matters: every question is a user touchpoint, and briskly's whole pitch is fewer touchpoints than full superpowers ceremony. More upfront context from the user (or from the codebase) means fewer questions later. If the user already provided the design, asking it back at them is friction without value.
 
 Each question presented to the user must include a recommended answer. Format:
 
@@ -94,11 +94,11 @@ Session ID = `YYYY-MM-DD-<topic-slug>` where the slug is:
 - Leading/trailing `-` trimmed
 - Capped at 60 chars
 
-Topic is derived from the user's invocation (first noun phrase) or asked during grill if unclear.
+Topic is derived from the user's invocation (first noun phrase) or asked during the question pass if unclear.
 
 ## Research mixin
 
-When the grill needs to investigate something, dispatch `briskly:research` async (see `skills/research/SKILL.md`). Plan continues asking questions on independent branches while research runs. When research returns, plan reads the artifact and may cite it in the design.md.
+When the question pass needs to investigate something, dispatch `briskly:research` async (see `skills/research/SKILL.md`). Plan continues asking questions on independent branches while research runs. When research returns, plan reads the artifact and may cite it in the design.md.
 
 If plan reads a research artifact older than 30 days during context-loading, surface a one-line freshness note.
 
