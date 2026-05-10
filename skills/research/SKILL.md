@@ -5,11 +5,11 @@ description: Investigate a topic by reading code or searching docs. Use whenever
 
 # briskly:research
 
-Investigative async dispatch that produces a date-stamped research artifact. Primarily a mixin to `briskly:plan` (called mid-grill when an answer requires real digging) but also user-invokable for ad-hoc deep-dives.
+Investigative async dispatch that produces a date-stamped research artifact. Primarily a mixin to `briskly:plan` (called mid-pass during the calibrated question pass when an answer requires real digging) but also user-invokable for ad-hoc deep-dives.
 
 ## When to use
 
-- **From plan:** during grill, when you need to investigate something to inform the design (e.g., "does our auth system support X?", "where is rate limiting currently handled?"). Dispatched async on branches independent of the next pending question.
+- **From plan:** during the question pass, when you need to investigate something to inform the design (e.g., "does our auth system support X?", "where is rate limiting currently handled?"). Dispatched async on branches independent of the next pending question.
 - **Direct invocation:** `/briskly:research <topic>` for ad-hoc deep-dives without committing to a plan session.
 
 ## What it produces
@@ -25,14 +25,14 @@ No auto-review runs on research artifacts — they're investigative, not decisio
 
 ### From plan (async, mixin)
 
-When plan needs to investigate during grill:
+When plan needs to investigate while asking questions:
 
 1. Derive a topic slug from the topic phrase (lowercase, non-alphanumerics → `-`, collapse runs, trim).
 2. Read `prompts/researcher.md` and substitute placeholders: `{{TOPIC}}`, `{{CWD}}`, `{{SLUG}}` (the slug from step 1), `{{DATE}}` (`YYYY-MM-DD` UTC).
-3. Dispatch a subagent **asynchronously** (using the Agent tool's `run_in_background: true` parameter where the harness supports it; otherwise foreground). Plan continues grilling on independent branches while research runs.
+3. Dispatch a subagent **asynchronously** (using the Agent tool's `run_in_background: true` parameter where the harness supports it; otherwise foreground). Plan continues asking questions on independent branches while research runs.
 4. When the subagent reports DONE, plan reads the artifact and may cite it in the design.md (e.g., "see `.briskly/research/auth-flow-2026-05-09.md`").
 
-If the harness does NOT support background subagents (no `run_in_background` parameter), dispatch foreground and continue grilling on dependent branches afterward — the artifact still gets written and cited; only the parallelism is lost.
+If the harness does NOT support background subagents (no `run_in_background` parameter), dispatch foreground and continue asking questions on dependent branches afterward — the artifact still gets written and cited; only the parallelism is lost.
 
 ### Direct invocation
 
