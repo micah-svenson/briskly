@@ -24,7 +24,7 @@ Briskly is a Claude Code plugin that fills the gap between plan mode (no design 
 
 | Skill | Purpose |
 |---|---|
-| `briskly:plan` | Calibrated grill (one question at a time, codebase-first, recommended answers paired) → reviewable `design.md` → auto plan-coherence review. Hands off to the user for approval. |
+| `briskly:plan` | Runs a calibrated question pass (one question at a time, codebase-first, recommended answers paired) → reviewable `design.md` → auto plan-coherence review. Hands off to the user for approval. |
 | `briskly:execute` | Reads an approved `design.md`, expands the execution outline into TodoWrite items, dispatches sequential implementer subagents, runs a single end-of-run review with auto-fix loop. |
 | `briskly:research` | Async investigation, dispatched primarily from plan but user-invokable as `/briskly:research <topic>`. Output is `Findings / Sources / Confidence`. |
 
