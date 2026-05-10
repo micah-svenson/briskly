@@ -11,6 +11,73 @@ A calibrated question pass (one question at a time, codebase-first, recommended 
 
 The user does not know briskly's internals — phrasing that requires that knowledge to make sense leaks the model and confuses them. Do not narrate this skill's inner mental model: do not reference question-pass calibration, "light" / "heavy", or comparisons to a baseline the user does not know exists. When narration is helpful, say something contextually useful about the next concrete step instead of meta-commentary about how this skill is calibrating itself. Example: "I have two questions, then I'll draft the design."
 
+## Response format
+
+Mirrors `docs/response-format.md`. If editing, propagate to all copies.
+
+### Principles
+
+- Lead with the answer. Recommendation first, reasoning after.
+- Structured beats prose. One thought per line; bullets over paragraphs when both fit.
+- Cap each line at one short sentence. If a thought needs two sentences, give it two lines.
+- Use bold labels for the parts a user scans for: **Recommendation:**, **Why:**, **Alternative:**, **Push back if**.
+- User CLAUDE.md or in-conversation instructions win when they conflict with this format.
+
+### Default templates
+
+Recommendation-style question:
+
+````
+<question>?
+
+**Recommendation:** <answer>.
+**Why:** <one-line reason>.
+**Alternative:** <other option> — <when it would win>.
+**Push back if** <signal that the recommendation is wrong>.
+````
+
+Approach selection (2–3 options):
+
+````
+A) <approach> — <one-line tradeoff>
+B) <approach> — <one-line tradeoff>
+C) <approach> — <one-line tradeoff>
+
+**Recommendation:** A.
+**Why:** <one-line reason>.
+````
+
+Handoff summary (end of plan / research / execute):
+
+````
+**Design ready:** `.briskly/sessions/<id>/design.md`
+**Builds:** <one-line of what gets built>.
+**Review:** <plan-coherence outcome line>.
+**Next:** Run `/briskly:execute` when ready to ship.
+````
+
+End-of-session report (execute / research):
+
+````
+**Done:** <one-line of what shipped or what was found>.
+**Files:** <paths touched, comma-separated>.
+**Tests:** <pass/fail summary>.
+**Follow-ups:** <anything deferred, or "none">.
+````
+
+### Examples
+
+Bad — run-on prose that fuses recommendation, reasoning, and alternative into one sentence:
+
+> For the mobile drop-up, my recommendation is to wrap the existing `<MobileActionSheet>` in a new `<ResponsiveActionMenu>` component that switches on viewport width so desktop still gets the popover and mobile gets the sheet, because that keeps the call sites unchanged and avoids forking the menu logic, though if you'd rather not introduce a new wrapper we could instead push the responsive switch down into `<MobileActionSheet>` itself and rename it, which is slightly more invasive but flatter.
+
+Good — same content, restructured:
+
+> **Recommendation:** Add a `<ResponsiveActionMenu>` wrapper that switches `<MobileActionSheet>` vs the existing popover on viewport width.
+> **Why:** Call sites stay unchanged; menu logic doesn't fork.
+> **Alternative:** Push the switch down into `<MobileActionSheet>` and rename it — flatter, but more invasive at the call sites.
+> **Push back if** you'd rather not introduce a new wrapper component.
+
 ## Flow
 
 1. **Read context.** Cwd state, recent git commits (skip with a one-line warning if the cwd is not a git repo — briskly still operates), any existing `.briskly/` artifacts (especially research files), the user's invocation message.
@@ -34,23 +101,11 @@ The user does not know briskly's internals — phrasing that requires that knowl
 
 The reason this matters: every question is a user touchpoint, and briskly's whole pitch is fewer touchpoints than full superpowers ceremony. More upfront context from the user (or from the codebase) means fewer questions later. If the user already provided the design, asking it back at them is friction without value.
 
-Each question presented to the user must include a recommended answer. Format:
-
-`<question>? My recommendation: <answer>. <one-line reason>. Push back if not.`
+Each question presented to the user must include a recommended answer. Use the recommendation-style question template from the Response format section above.
 
 ## Approach selection
 
-Once scope is clear, propose 2–3 approaches:
-
-```
-A) <approach>: <one-line tradeoff>
-B) <approach>: <one-line tradeoff>
-C) <approach>: <one-line tradeoff>
-
-I lean A. <reason in one sentence>.
-```
-
-Lead with the recommended option and explain why.
+Once scope is clear, propose 2–3 approaches using the approach-selection template from the Response format section above. Lead with the recommended option and explain why in one line.
 
 ## design.md sections (template)
 
@@ -78,12 +133,13 @@ If M = 0: proceed to handoff.
 
 ## Handoff
 
-End the plan session with these four pieces, in order:
+End the plan session using the Handoff summary template from the Response format section above. Concretely:
 
-1. The file path: `.briskly/sessions/<id>/design.md`
-2. A 2-3 sentence summary of the design (what gets built, the chosen approach, anything notable about scope)
-3. The outcome line from plan-coherence review
-4. A line: `Run /briskly:execute when ready to ship.`
+- **Design ready:** `.briskly/sessions/<id>/design.md`
+- **Builds:** one-line summary of what gets built and the chosen approach.
+- **Notable:** anything about scope, risk, or tradeoffs worth flagging (omit if nothing).
+- **Review:** the outcome line from plan-coherence review.
+- **Next:** `Run /briskly:execute when ready to ship.`
 
 If the design is significant enough to warrant project-history retention (e.g., it captures non-obvious architecture decisions or risk tradeoffs), append a one-line suggestion: `Consider committing this session — remove .briskly/sessions/<id>/ from .gitignore if you want the design tracked.` The decision stays with the user.
 
