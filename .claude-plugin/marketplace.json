@@ -1,12 +1,13 @@
 {
   "name": "briskly",
+  "description": "Marketplace hosting the briskly daily-driver workflow plugin.",
   "owner": {
     "name": "Micah Svenson"
   },
   "plugins": [
     {
       "name": "briskly",
-      "source": ".",
+      "source": "./",
       "description": "Daily-driver workflow plugin (plan / execute / research)."
     }
   ]
