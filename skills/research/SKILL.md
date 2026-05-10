@@ -5,7 +5,7 @@ description: Investigate a topic by reading code or searching docs. Use whenever
 
 # briskly:research
 
-Investigative async dispatch that produces a date-stamped research artifact. Primarily a mixin to `briskly:plan` (called mid-pass during the calibrated question pass when an answer requires real digging) but also user-invokable for ad-hoc deep-dives.
+Investigative async dispatch that produces a date-stamped research artifact. Primarily a mixin to `briskly:plan` (called during the calibrated question pass when an answer requires real digging) but also user-invokable for ad-hoc deep-dives.
 
 ## When to use
 
