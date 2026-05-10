@@ -1,0 +1,13 @@
+{
+  "name": "briskly",
+  "owner": {
+    "name": "Micah Svenson"
+  },
+  "plugins": [
+    {
+      "name": "briskly",
+      "source": ".",
+      "description": "Daily-driver workflow plugin (plan / execute / research)."
+    }
+  ]
+}
