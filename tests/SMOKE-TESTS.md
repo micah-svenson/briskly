@@ -94,3 +94,19 @@ Manual checklist run after install. Each section maps to acceptance criteria in 
 - [ ] Execute does NOT push to remote or open PRs.
 - [ ] Execute does NOT prompt for user input mid-flight (runs to completion or escalation).
 - [ ] Final state is a clean working tree on the current branch with commits made.
+
+## §3.5 Plugin packaging
+
+- [ ] Install flow end-to-end works from a clean `~/.claude/`:
+  1. `/plugin marketplace add micah-svenson/briskly`
+  2. `/plugin install briskly@briskly`
+  3. Confirm: `briskly:plan`, `briskly:execute`, `briskly:research` appear in skill list
+- [ ] Update flow works: bump version, push, `/plugin marketplace update briskly` picks up the new version.
+- [ ] CI workflow rejects a PR that modifies `skills/**` or `hooks/**` without bumping version.
+- [ ] CI workflow accepts a doc-only PR.
+
+## §3.6 General
+
+- [ ] design.md, notes.md, and research artifacts are all valid markdown (parseable by standard tools — e.g., `pandoc`, `markdown-it`).
+- [ ] Execute runs to completion or escalation without prompting for user input mid-flight.
+- [ ] Briskly works in a non-git cwd (degraded gracefully — single-line warning, but skills still operate).

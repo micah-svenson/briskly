@@ -1,34 +1,68 @@
 # Briskly
 
-A structured-yet-speedy workflow plugin for Claude Code. Daily driver.
+Daily-driver workflow plugin for Claude Code. Sits between plan mode (no design discipline) and superpowers (full ceremony) — three skills, reviewable specs, automated reviews.
 
-## What it is
+## Install
 
-Briskly is the tool you reach for constantly. It splits the gap between two things that don't fit:
+```bash
+/plugin marketplace add micah-svenson/briskly
+/plugin install briskly@briskly
+```
 
-- **Claude Code plan mode** — too basic. No design discipline, no review pattern, no spec.
-- **superpowers** — too heavy for daily work. Full brainstorming → spec → plan → execute → review pipeline, even when you just want to knock something out.
+Restart your Claude Code session to activate the SessionStart hook.
 
-Briskly fills the gap: light enough to use without thinking, structured enough to produce real work. Skills read adverbially in invocation: `briskly:brainstorm`, `briskly:execute`, `briskly:review`.
+## The three skills
+
+| Skill | What it does |
+|---|---|
+| `/briskly:plan` | Calibrated grill → reviewable `design.md` → auto plan-coherence review |
+| `/briskly:execute` | Subagent-driven implementation from `design.md` → auto-fix review at end |
+| `/briskly:research` | Async investigation, dispatched primarily from plan but user-invokable too |
+
+## Typical use
+
+```
+/briskly:plan add a per-user rate limiter to the API
+   <calibrated grill — usually a few questions; less if you provided context>
+   <design.md written to .briskly/sessions/<id>/design.md>
+   <plan-coherence review runs silently; ✓ outcome line>
+   <user reviews the design — usually under 3 minutes>
+
+/briskly:execute
+   <TodoWrite shows live progress>
+   <subagents implement task by task>
+   <single review subagent at the end auto-fixes what it can>
+   <execute-review: ✓ all green>
+```
+
+## Coexistence with other tools
+
+- **vs Claude Code plan mode:** briskly has design discipline and produces a reviewable spec. Use plan mode for trivial pre-work; reach for briskly when the work merits a written design.
+- **vs superpowers:** briskly is intentionally lighter. If a project needs full brainstorm → writing-plans → executing-plans → multi-stage review ceremony, defer to superpowers.
+- All briskly skills are namespaced `briskly:*` and never collide with `superpowers:*`.
+
+## Artifacts
+
+Briskly writes to `.briskly/` at the cwd root:
+
+```
+.briskly/
+├── sessions/<YYYY-MM-DD-slug>/
+│   ├── design.md      # human-reviewable design
+│   └── notes.md       # subagent shared scratchpad
+└── research/<topic>-YYYY-MM-DD.md
+```
+
+`.briskly/` is gitignored by default. Commit it when project history is valuable.
+
+## Versioning
+
+Briskly uses explicit semver in `.claude-plugin/plugin.json`. Each push to main bumps the version (CI enforces this for skill/hook changes). Run `/plugin marketplace update briskly` to pick up new versions.
 
 ## Status
 
-**Pre-implementation.** This repo holds the starting spec and will host the plugin as it gets built. Spec lives in [`docs/spec.md`](docs/spec.md) and is expected to evolve through refinement before code.
-
-## Where this fits
-
-Briskly is one of three independent Claude Code plugins in a broader architecture:
-
-| Plugin    | Role                | One-liner                                                  |
-|-----------|---------------------|------------------------------------------------------------|
-| grovemind | Awareness / journey | What you're working on, sticky across sessions             |
-| grovework | Structured pipeline | Full discipline for major projects — phases, canopies, AC  |
-| briskly   | **Daily driver**    | Structured-yet-speedy work; this repo                      |
-
-Each plugin works **fully standalone**. Briskly is not coupled to the others — its primary use is alone or with grovemind for resumability. grovework is an optional bigger-hammer for major projects.
-
-The full cross-plugin vision lives in the grovework repo at `docs/agentic-workflow-vision.md`.
+v1.0.0 — initial release. See `docs/superpowers/specs/2026-05-09-briskly-design.md` for the full design and `docs/superpowers/plans/2026-05-09-briskly-v1.md` for the implementation plan.
 
 ## License
 
-TBD.
+MIT.
