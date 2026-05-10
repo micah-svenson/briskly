@@ -62,3 +62,35 @@ Manual checklist run after install. Each section maps to acceptance criteria in 
 
 - [ ] Plan presents file path + brief summary at end.
 - [ ] Plan does NOT auto-invoke briskly:execute (manual handoff is required).
+
+## §3.2 briskly:execute
+
+### Pre-flight
+
+- [ ] Refuses to run when no `.briskly/sessions/<id>/design.md` exists. Surfaces a clear error.
+- [ ] Accepts an explicit session id argument or auto-detects most recent session.
+
+### Orchestration
+
+- [ ] TodoWrite is populated from the execution outline before any subagent dispatches.
+- [ ] Implementer subagents are dispatched sequentially (verifiable by trace — no parallel dispatches in v1).
+- [ ] Each implementer prompt contains paths (design.md, notes.md), not the spec text inline.
+- [ ] notes.md exists and is appended to during execution (each entry tagged with task id and timestamp).
+
+### Test quality
+
+- [ ] Every AC in the spec has at least one test that pins to it (verifiable by AC reference in test name/comment/docstring).
+- [ ] Edge cases and negative cases identified in the spec each have a test.
+- [ ] An AC with zero test coverage causes execute-final review to fail.
+
+### Review and auto-fix
+
+- [ ] Single review subagent at end (not per-task).
+- [ ] Auto-fix loop respects 2-loop cap.
+- [ ] Outcome line emitted: `execute-review: ✓ all green` or `execute-review: 🚨 N unresolved after fix loop, <summary>`.
+
+### Boundaries
+
+- [ ] Execute does NOT push to remote or open PRs.
+- [ ] Execute does NOT prompt for user input mid-flight (runs to completion or escalation).
+- [ ] Final state is a clean working tree on the current branch with commits made.
