@@ -15,7 +15,7 @@ Restart your Claude Code session to activate the SessionStart hook.
 
 | Skill | What it does |
 |---|---|
-| `/briskly:plan` | Calibrated grill → reviewable `design.md` → auto plan-coherence review |
+| `/briskly:plan` | Calibrated question pass → reviewable `design.md` → auto plan-coherence review |
 | `/briskly:execute` | Subagent-driven implementation from `design.md` → auto-fix review at end |
 | `/briskly:research` | Async investigation, dispatched primarily from plan but user-invokable too |
 
@@ -23,7 +23,7 @@ Restart your Claude Code session to activate the SessionStart hook.
 
 ```
 /briskly:plan add a per-user rate limiter to the API
-   <calibrated grill — usually a few questions; less if you provided context>
+   <calibrated question pass — usually a few questions; less if you provided context>
    <design.md written to .briskly/sessions/<id>/design.md>
    <plan-coherence review runs silently; ✓ outcome line>
    <user reviews the design — usually under 3 minutes>
