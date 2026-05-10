@@ -1,0 +1,106 @@
+---
+name: plan
+description: Design before non-trivial implementation. Calibrated grill produces a reviewable design.md, auto plan-coherence review runs, user approves and manually invokes execute.
+---
+
+# briskly:plan
+
+Calibrated grill (one question at a time, codebase-first, recommended answers paired) produces a reviewable `design.md`. An auto plan-coherence review runs immediately on the artifact. The user reads, approves, and manually invokes `briskly:execute`. The handoff is the single human gate that protects against runaway loops building the wrong thing.
+
+## Flow
+
+1. **Read context.** Cwd state, recent git commits, any existing `.briskly/` artifacts (especially research files), the user's invocation message.
+2. **Calibrated grill.** Ask one question at a time. Each question paired with a recommended answer. Codebase-first: if a question can be answered by reading code, read it instead of asking. Grill load scales inversely with context provided — full grill from a one-liner; near-zero grill when the user provides a complete design paragraph.
+3. **Approach selection.** Once scope is clear, propose 2–3 approaches with tradeoffs. Lead with your recommendation. User picks.
+4. **Author design.md straight through.** No per-section approval interruptions. Write to `.briskly/sessions/<YYYY-MM-DD-slug>/design.md` (create the directory if needed).
+5. **Auto plan-coherence review.** Dispatch a subagent with `prompts/plan-coherence-reviewer.md` filled in (`{{SPEC_PATH}}` replaced with the actual path).
+6. **Emit outcome line** to chat:
+   - `plan-review: <N> issues auto-fixed, ✓ ready` (when no blockers)
+   - `plan-review: <M> blocking issue(s) 🚨 <first blocker>` (when blockers exist)
+7. **Present to user.** File path + 2-3 sentence summary. **Do NOT auto-invoke execute** — the user must explicitly run `/briskly:execute`.
+
+## Calibrated grill — heuristic
+
+| Context provided in invocation | Grill load |
+|---|---|
+| Empty or one-line | Full grill: problem framing, approach options, AC, edges |
+| Partial (problem stated, no approach) | Grill only on the gaps |
+| Complete design paragraph | No grill — draft directly |
+| Codebase-answerable question | Read the code instead of asking |
+
+Each question presented to the user must include a recommended answer. Format:
+
+`<question>? My recommendation: <answer>. <one-line reason>. Push back if not.`
+
+## Approach selection
+
+Once scope is clear, propose 2–3 approaches:
+
+```
+A) <approach>: <one-line tradeoff>
+B) <approach>: <one-line tradeoff>
+C) <approach>: <one-line tradeoff>
+
+I lean A. <reason in one sentence>.
+```
+
+Lead with the recommended option and explain why.
+
+## design.md sections (template)
+
+Every design.md must have these six sections, in this order:
+
+1. **Problem** — one paragraph: what we're solving and why now.
+2. **Approach** — chosen design as prose. Architecture, key components, data flow if non-trivial.
+3. **Acceptance criteria** — testable assertions including edge cases and negative cases. Tests written by execute pin to these.
+4. **Out of scope** — explicit NOTs.
+5. **Open questions / risks** — known unknowns, things execute may defer back.
+6. **Execution outline** — 5–10 one-liners. No code, no per-substep checkboxes. Format: "Add X to Y", "Wire Z handler", "Add tests for W edge cases".
+
+## Plan-coherence review
+
+After design.md is written, dispatch `prompts/plan-coherence-reviewer.md` with `{{SPEC_PATH}}` filled in. The reviewer:
+- Auto-fixes typos, missing AC, prose-outline mismatches, untestable AC phrasing
+- Escalates internal contradictions and missing source-of-truth info
+- Returns a structured outcome with N auto-fixed and M blocking
+
+Translate the structured outcome into the chat outcome line per the Flow step 6 format.
+
+If M > 0: present the blocker(s) to the user. Decision: address now / defer to execute / proceed as-is. Do not write the design.md again unless the user picks "address now."
+
+If M = 0: proceed to handoff.
+
+## Handoff
+
+End the plan session with these four pieces, in order:
+
+1. The file path: `.briskly/sessions/<id>/design.md`
+2. A 2-3 sentence summary of the design (what gets built, the chosen approach, anything notable about scope)
+3. The outcome line from plan-coherence review
+4. A line: `Run /briskly:execute when ready to ship.`
+
+Do NOT auto-invoke execute.
+
+## Slug rules
+
+Session ID = `YYYY-MM-DD-<topic-slug>` where the slug is:
+- Lowercase
+- Non-alphanumerics replaced with `-`
+- Runs of `-` collapsed
+- Leading/trailing `-` trimmed
+- Capped at 60 chars
+
+Topic is derived from the user's invocation (first noun phrase) or asked during grill if unclear.
+
+## Research mixin
+
+When the grill needs to investigate something, dispatch `briskly:research` async (see `skills/research/SKILL.md`). Plan continues asking questions on independent branches while research runs. When research returns, plan reads the artifact and may cite it in the design.md.
+
+If plan reads a research artifact older than 30 days during context-loading, surface a one-line freshness note.
+
+## What this skill does NOT do
+
+- Per-section approval during drafting (no mid-draft interruptions)
+- Auto-invoke execute (manual handoff only — protects against runaway loops building the wrong thing)
+- Modify files outside `.briskly/sessions/<id>/`
+- Block on plan-coherence review when M=0 (proceed silently)
