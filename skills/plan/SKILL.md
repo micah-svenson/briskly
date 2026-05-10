@@ -9,7 +9,7 @@ Calibrated grill (one question at a time, codebase-first, recommended answers pa
 
 ## Flow
 
-1. **Read context.** Cwd state, recent git commits, any existing `.briskly/` artifacts (especially research files), the user's invocation message.
+1. **Read context.** Cwd state, recent git commits (skip with a one-line warning if the cwd is not a git repo — briskly still operates), any existing `.briskly/` artifacts (especially research files), the user's invocation message.
 2. **Calibrated grill.** Ask one question at a time. Each question paired with a recommended answer. Codebase-first: if a question can be answered by reading code, read it instead of asking. Grill load scales inversely with context provided — full grill from a one-liner; near-zero grill when the user provides a complete design paragraph.
 3. **Approach selection.** Once scope is clear, propose 2–3 approaches with tradeoffs. Lead with your recommendation. User picks.
 4. **Author design.md straight through.** No per-section approval interruptions. Write to `.briskly/sessions/<YYYY-MM-DD-slug>/design.md` (create the directory if needed).
@@ -78,6 +78,8 @@ End the plan session with these four pieces, in order:
 2. A 2-3 sentence summary of the design (what gets built, the chosen approach, anything notable about scope)
 3. The outcome line from plan-coherence review
 4. A line: `Run /briskly:execute when ready to ship.`
+
+If the design is significant enough to warrant project-history retention (e.g., it captures non-obvious architecture decisions or risk tradeoffs), append a one-line suggestion: `Consider committing this session — remove .briskly/sessions/<id>/ from .gitignore if you want the design tracked.` The decision stays with the user.
 
 Do NOT auto-invoke execute.
 

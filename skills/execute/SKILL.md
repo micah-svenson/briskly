@@ -65,6 +65,10 @@ Omit lines that don't apply. Subsequent subagents read notes.md before starting 
 
 Implementers dispatch one at a time. No parallel dispatch in v1 — risk of file conflicts outweighs the speed benefit at this scope. Parallel dispatch for proven-conflict-free tasks is parked for a future version.
 
+## Non-git cwd
+
+If the cwd is not a git repository, surface a one-line warning at pre-flight (`Note: cwd is not a git repo — commits and diff-based review will be skipped or degraded.`) and proceed. Implementers may skip the commit step; the end-of-run reviewer falls back to file-tree inspection vs the spec rather than a diff.
+
 ## Subagent prompts
 
 - `prompts/implementer.md` — per-task implementer
