@@ -8,3 +8,10 @@ __pycache__/
 *.pyc
 .env
 .env.local
+
+# Briskly local artifacts (when this repo is used as a workspace)
+.briskly/
+
+# Test ephemera
+tests/.tmp/
+*.bak
