@@ -7,6 +7,10 @@ description: Design a feature, refactor, or bugfix before implementing. Use when
 
 A calibrated question pass (one question at a time, codebase-first, recommended answers paired) produces a reviewable `design.md`. An auto plan-coherence review runs immediately on the artifact. The user reads, approves, and manually invokes `briskly:execute`. The handoff is the single human gate that protects against runaway loops building the wrong thing.
 
+## User-facing language
+
+The user does not know briskly's internals — phrasing that requires that knowledge to make sense leaks the model and confuses them. Do not narrate this skill's inner mental model: do not reference question-pass calibration, "light" / "heavy", or comparisons to a baseline the user does not know exists. When narration is helpful, say something contextually useful about the next concrete step instead of meta-commentary about how this skill is calibrating itself. Example: "I have two questions, then I'll draft the design."
+
 ## Flow
 
 1. **Read context.** Cwd state, recent git commits (skip with a one-line warning if the cwd is not a git repo — briskly still operates), any existing `.briskly/` artifacts (especially research files), the user's invocation message.
