@@ -1,6 +1,6 @@
 ---
 name: plan
-description: Design before non-trivial implementation. Calibrated grill produces a reviewable design.md, auto plan-coherence review runs, user approves and manually invokes execute.
+description: Design a feature, refactor, or bugfix before implementing. Use whenever the user says "let me plan X", "design Y", "before I build Z", or wants a reviewable spec before touching code.
 ---
 
 # briskly:plan
@@ -27,6 +27,8 @@ Calibrated grill (one question at a time, codebase-first, recommended answers pa
 | Partial (problem stated, no approach) | Grill only on the gaps |
 | Complete design paragraph | No grill — draft directly |
 | Codebase-answerable question | Read the code instead of asking |
+
+The reason this matters: every grill question is a user touchpoint, and briskly's whole pitch is fewer touchpoints than full superpowers ceremony. More upfront context from the user (or from the codebase) means fewer questions later. If the user already provided the design, asking it back at them is friction without value.
 
 Each question presented to the user must include a recommended answer. Format:
 

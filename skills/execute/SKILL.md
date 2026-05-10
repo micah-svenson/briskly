@@ -1,6 +1,6 @@
 ---
 name: execute
-description: Implement an approved briskly design.md via sequential subagent dispatch with shared notes scratchpad and a single end-of-run review with auto-fix loop.
+description: Implement an approved briskly design.md. Use whenever the user says "ship it", "build this", "implement the design", "run execute", or has a `.briskly/sessions/<id>/design.md` ready to ship.
 ---
 
 # briskly:execute
@@ -33,7 +33,9 @@ Implements an approved `design.md` by expanding its execution outline into TodoW
    - If reviewer reports M > 0 blockers: read `prompts/fixer.md`, substitute placeholders (`{{DESIGN_PATH}}`, `{{ISSUES}}` = the blocker list)
    - Dispatch fixer subagent
    - Re-dispatch reviewer
-   - Cap at 2 fix → review iterations. After cap, escalate.
+   - Cap at 2 fix → review iterations. After cap, escalate (see below).
+
+**Escalation behavior** (when the cap is hit with M > 0 blockers remaining): pause execution, present to the user (1) the unresolved blockers from the final review, (2) what each fix attempt tried, and (3) the relevant commit SHAs. Emit the 🚨 outcome line. Do NOT continue dispatching subagents. The user decides next: retry with new context, re-plan, or abandon.
 7. **Outcome line** to chat:
    - M = 0 (after at most 2 loops): `execute-review: ✓ all green`
    - M > 0 after cap: `execute-review: 🚨 <M> unresolved after fix loop, <summary>`

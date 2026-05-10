@@ -1,6 +1,6 @@
 {
   "name": "briskly",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "A daily-driver workflow plugin: structured-yet-speedy plan/execute/research skills that sit between Claude Code plan mode and superpowers.",
   "author": {
     "name": "Micah Svenson"

@@ -1,6 +1,6 @@
 ---
 name: research
-description: Async investigative dispatch for codebase exploration and lookup. Mixin to briskly:plan during grill; user-invokable as /briskly:research <topic>. Output is a Findings/Sources/Confidence artifact.
+description: Investigate a topic by reading code or searching docs. Use whenever the user says "look into X", "how does Y work", "research Z", or `/briskly:research <topic>`. Writes a dated artifact.
 ---
 
 # briskly:research
@@ -31,6 +31,8 @@ When plan needs to investigate during grill:
 2. Read `prompts/researcher.md` and substitute placeholders: `{{TOPIC}}`, `{{CWD}}`, `{{SLUG}}` (the slug from step 1), `{{DATE}}` (`YYYY-MM-DD` UTC).
 3. Dispatch a subagent **asynchronously** (using the Agent tool's `run_in_background: true` parameter where the harness supports it; otherwise foreground). Plan continues grilling on independent branches while research runs.
 4. When the subagent reports DONE, plan reads the artifact and may cite it in the design.md (e.g., "see `.briskly/research/auth-flow-2026-05-09.md`").
+
+If the harness does NOT support background subagents (no `run_in_background` parameter), dispatch foreground and continue grilling on dependent branches afterward — the artifact still gets written and cited; only the parallelism is lost.
 
 ### Direct invocation
 
