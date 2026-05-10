@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+# Emit JSON containing the using-briskly skill body in the platform-appropriate field.
+# Mirrors superpowers' platform detection.
+
+set -euo pipefail
+
+ROOT="${CLAUDE_PLUGIN_ROOT:-${CURSOR_PLUGIN_ROOT:-$(cd "$(dirname "$0")/.." && pwd)}}"
+CONTENT_FILE="$ROOT/skills/using-briskly/SKILL.md"
+
+if [[ ! -f "$CONTENT_FILE" ]]; then
+  # Defensive: emit empty additionalContext rather than failing the session
+  CONTENT=""
+else
+  CONTENT=$(cat "$CONTENT_FILE")
+fi
+
+# JSON-escape the content using jq if available, fallback to python
+escape_json() {
+  if command -v jq >/dev/null 2>&1; then
+    jq -Rs . <<<"$1"
+  else
+    python3 -c 'import json,sys; print(json.dumps(sys.stdin.read()))' <<<"$1"
+  fi
+}
+
+ESCAPED=$(escape_json "$CONTENT")
+
+# Platform detection
+if [[ -n "${CURSOR_PLUGIN_ROOT:-}" ]]; then
+  printf '{"additional_context": %s}\n' "$ESCAPED"
+elif [[ -n "${CLAUDE_PLUGIN_ROOT:-}" && -z "${COPILOT_CLI:-}" ]]; then
+  printf '{"hookSpecificOutput": {"hookEventName": "SessionStart", "additionalContext": %s}}\n' "$ESCAPED"
+else
+  printf '{"additionalContext": %s}\n' "$ESCAPED"
+fi
