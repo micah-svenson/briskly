@@ -28,7 +28,7 @@ output_a=$(CLAUDE_PLUGIN_ROOT="$PWD" COPILOT_CLI="" bash "$SCRIPT")
 field_a=$(echo "$output_a" | jq -r '.hookSpecificOutput.additionalContext // empty')
 event_a=$(echo "$output_a" | jq -r '.hookSpecificOutput.hookEventName // empty')
 assert_eq "$event_a" "SessionStart" "claude-code mode emits hookEventName=SessionStart"
-assert_contains "$field_a" "stub-content-for-hook-test" "claude-code mode injects skill content"
+assert_contains "$field_a" "briskly:plan" "claude-code mode injects skill content"
 absent_field_a_cursor=$(echo "$output_a" | jq -r '.additional_context // "absent"')
 absent_field_a_top=$(echo "$output_a" | jq -r '.additionalContext // "absent"')
 assert_eq "$absent_field_a_cursor" "absent" "claude-code mode does NOT emit top-level additional_context"
@@ -37,7 +37,7 @@ assert_eq "$absent_field_a_top" "absent" "claude-code mode does NOT emit top-lev
 # Mode 2: CURSOR_PLUGIN_ROOT set → expect top-level additional_context
 output_b=$(CURSOR_PLUGIN_ROOT="$PWD" bash "$SCRIPT")
 field_b=$(echo "$output_b" | jq -r '.additional_context // empty')
-assert_contains "$field_b" "stub-content-for-hook-test" "cursor mode injects skill content"
+assert_contains "$field_b" "briskly:plan" "cursor mode injects skill content"
 absent_field_b_hook=$(echo "$output_b" | jq -r '.hookSpecificOutput // "absent"')
 absent_field_b_top=$(echo "$output_b" | jq -r '.additionalContext // "absent"')
 assert_eq "$absent_field_b_hook" "absent" "cursor mode does NOT emit hookSpecificOutput"
@@ -46,7 +46,7 @@ assert_eq "$absent_field_b_top" "absent" "cursor mode does NOT emit top-level ad
 # Mode 3: COPILOT_CLI set → expect top-level additionalContext
 output_c=$(CLAUDE_PLUGIN_ROOT="$PWD" COPILOT_CLI="1" bash "$SCRIPT")
 field_c=$(echo "$output_c" | jq -r '.additionalContext // empty')
-assert_contains "$field_c" "stub-content-for-hook-test" "copilot-cli mode injects skill content"
+assert_contains "$field_c" "briskly:plan" "copilot-cli mode injects skill content"
 absent_field_c_cursor=$(echo "$output_c" | jq -r '.additional_context // "absent"')
 absent_field_c_hook=$(echo "$output_c" | jq -r '.hookSpecificOutput // "absent"')
 assert_eq "$absent_field_c_cursor" "absent" "copilot-cli mode does NOT emit additional_context"
