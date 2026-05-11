@@ -63,7 +63,7 @@ def validate_slug(slug: str) -> str | None:
     if not slug:
         return "slug is empty"
     if slug.endswith(".md"):
-        return "slug must not include the .md extension"
+        return f"slug must not include the .md extension (try {slug[:-3]!r})"
     if "/" in slug or "\\" in slug:
         return "slug must not contain path separators"
     if slug in (".", ".."):

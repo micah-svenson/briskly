@@ -1,6 +1,6 @@
 ---
 name: note
-description: Capture a note, issue, idea, or piece of feedback as a markdown file in the current or another project's .briskly/notes/ directory. Use whenever the user says "leave a note", "capture this", "remember this for later", "file feedback for X", "make a note about Y", "archive that note", or invokes /briskly:note. Trigger even when the project name is mentioned implicitly ("note for briskly that...") and when capture is mid-flow during other work — the whole point is mid-session capture without breaking the current task.
+description: Capture a note, issue, idea, or piece of feedback to a project's .briskly/notes/ directory — current project (cwd) or another (`to:<name>` or "note for briskly that..."). Triggers on "leave a note", "capture this", "remember this for later", "file feedback for X", "make a note about Y", "archive that note", or `/briskly:note`. Mid-flow capture during other work is the whole point. Also load when the user asks about existing notes ("what notes do I have", "find the note about X", "any notes about Y") so the storage convention is available for the read path. Skip when the user explicitly references a different note system (Obsidian, Notion, Apple Notes, etc.).
 ---
 
 # briskly:note
@@ -87,6 +87,17 @@ The point of this skill is to write a note that reads well *months later, in a d
 - **Voice is first-person from the user.** These are the user's notes, not your third-person summary of what the user said.
 - **Actionable when actionable.** If the note is a TODO/issue, include the obvious next step. If it's an observation, just say so — don't manufacture action items.
 - **Session-context preserved when relevant.** "Came up while implementing X in quartery" — the why-this-came-up matters for prioritization later. Skip when irrelevant.
+
+### Common failure modes
+
+These are the ways a note ends up useless. Recognize them in your own draft before writing:
+
+- **Verbatim or near-verbatim restatement** of what the user said. The user's input is a seed, not the note. Expand it.
+- **Dangling references** — "this", "the issue", "that PR", "the bug we discussed" — without naming what `this` is. The future reader has zero context.
+- **Manufactured action items.** If the user is just observing something, the note records the observation. Don't invent next steps that weren't there.
+- **Asking the user for a title or filename.** You infer the slug from the content. Don't make capture into a question-and-answer session — that defeats mid-flow capture.
+- **Probing the filesystem manually** to resolve a project name. Call `scripts/resolve_project.py` — it handles persistence, ambiguity, and case-insensitive macOS quirks correctly.
+- **Generating frontmatter with a `source` field that equals the target.** Omit `source` entirely when source = target. `source: <same-name>` is noise.
 
 ### Worked example: thin paraphrase vs. enriched
 
@@ -273,15 +284,20 @@ Archive is the single read-then-move action this skill performs. It does not req
 
 ## Notes awareness
 
-This skill is write-focused (plus the archive move). It does not ship a read/list/search subcommand. But the storage convention is documented here so any future Claude session — having loaded this skill — can answer "what notes do I have for briskly?" or "is there a note about output verbosity?" using base tools.
+This skill is write-focused (plus the archive move). It does not ship a read/list/search subcommand — but it loads when the user asks about existing notes (per the description) precisely so the storage convention is in context for the read path.
 
-Storage convention:
+When the user asks something like "what notes do I have for briskly?" or "is there a note about output verbosity?" or "find the note about polling", you (Claude) handle it directly with base tools. No script call. No skill subcommand. Just:
+
+- `ls .briskly/notes/` to list (or `ls ~/Projects/briskly/.briskly/notes/` for cross-project — resolve the path with `scripts/resolve_project.py` if needed)
+- `grep -ri 'polling' .briskly/notes/` to search bodies
+- `Read` for individual files
+- For routing across projects, the `to:<name>` resolution rules apply the same way as for capture
+
+Storage convention you can rely on:
 
 - Path pattern: `<project-root>/.briskly/notes/<YYYY-MM-DD>-<slug>.md`
 - Frontmatter fields: `date` (ISO), `source` (cwd basename when captured, omitted when same as target), `tags` (optional list)
 - Body: starts with a `# heading` line
-
-Read-path tools: `ls .briskly/notes/`, `glob .briskly/notes/*.md`, `grep` across them, `Read` for individual files. No special tooling.
 
 **Default scope excludes archived notes.** When the user asks "what notes do I have?" / "any notes about X?" / "show me my notes for briskly", list and search only `.briskly/notes/*.md`. Do **not** include `.briskly/notes/.archive/*.md`.
 

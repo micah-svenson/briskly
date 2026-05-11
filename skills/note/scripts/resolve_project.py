@@ -155,8 +155,7 @@ def resolve(name: str) -> tuple[int, str, str]:
         )
     return 3, "", (
         f"NO_MATCH:{name}\n"
-        f"No candidate root contains a directory named '{name}'. "
-        "Re-invoke with --persist-path <abs-path> after asking the user."
+        f"No candidate root contains a directory named '{name}'."
     )
 
 
@@ -226,12 +225,6 @@ def main(argv: list[str]) -> int:
             "Persist <name> -> PATH in project_paths and return PATH. "
             "Use after the user supplies an absolute path for a no-match name."
         ),
-    )
-    parser.add_argument(
-        "--non-interactive",
-        action="store_true",
-        default=True,
-        help="Reserved for future interactive mode; currently always non-interactive.",
     )
     args = parser.parse_args(argv)
 
