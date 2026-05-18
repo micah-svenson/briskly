@@ -97,6 +97,7 @@ When plan needs to investigate while asking questions:
 1. Derive a topic slug from the topic phrase (lowercase, non-alphanumerics → `-`, collapse runs, trim).
 2. Read `prompts/researcher.md` and substitute placeholders: `{{TOPIC}}`, `{{CWD}}`, `{{SLUG}}` (the slug from step 1), `{{DATE}}` (`YYYY-MM-DD` UTC).
 3. Dispatch a subagent **asynchronously** (using the Agent tool's `run_in_background: true` parameter where the harness supports it; otherwise foreground). Plan continues asking questions on independent branches while research runs.
+   - Set `model: haiku` on the Agent call. Research is search-and-summarize — the same investigative shape superpowers routes through its Explore agent at Haiku; quality risk is low.
 4. When the subagent reports DONE, plan reads the artifact and may cite it in the design.md (e.g., "see `.briskly/research/auth-flow-2026-05-09.md`").
 
 If the harness does NOT support background subagents (no `run_in_background` parameter), dispatch foreground and continue asking questions on dependent branches afterward — the artifact still gets written and cited; only the parallelism is lost.
@@ -108,6 +109,7 @@ User runs `/briskly:research <topic>`:
 1. Topic = the user's argument string.
 2. Same slug derivation and prompt substitution.
 3. Dispatch foreground (the user is waiting for the artifact).
+   - Set `model: haiku` on the Agent call. Same rationale as the async path: investigative search-and-summarize, not a decision; quality risk is low.
 4. On DONE, present the artifact path and a one-line summary.
 
 ## Slug derivation

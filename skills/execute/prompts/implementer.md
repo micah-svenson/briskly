@@ -107,7 +107,7 @@ Omit lines that don't apply.
 
 Return one of:
 - `DONE` — task complete, tests pass, committed
-- `DONE_WITH_CONCERNS: <description>` — done but flagged something for review attention
+- `DONE_WITH_CONCERNS: <description>` — done but flagged something for review attention; use this when uncertain whether your approach matches the spec's intent
 - `BLOCKED: <reason>` — cannot proceed; explain why
 
 ## Boundaries

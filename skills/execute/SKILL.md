@@ -90,15 +90,24 @@ Good — same content, restructured:
    - Mark TodoWrite item `in_progress`
    - Read `prompts/implementer.md`, substitute placeholders (`{{TASK_ID}}`, `{{TASK_DESCRIPTION}}` from outline, `{{CWD}}`, `{{DESIGN_PATH}}`, `{{NOTES_PATH}}`)
    - Dispatch implementer subagent with the filled prompt. **The subagent receives paths, not the spec text inline.**
+     - Set `model: opus` on the Agent call by default. Briskly's promise is autonomous execution from a single design handoff — when the implementer gets a task wrong, the cost surfaces as user rework, which dwarfs the token savings of a lighter model. Quality on this path is the differentiator.
+     - Set `model: sonnet` only when the task description clearly matches one of these named patterns:
+       - doc-only edits — `*.md`, README, or comment-only changes that don't alter behavior
+       - test additions where the implementation under test already exists
+       - single-file mechanical edits — rename, import-path update, format-only
+       - pure dependency or config bumps
+     - When a task does not clearly match the allowlist, default to Opus. The allowlist is the contract; "feels simple" is not a pattern on it.
    - On `DONE` or `DONE_WITH_CONCERNS`: mark TodoWrite `completed`, proceed to next task
    - On `BLOCKED`: pause, escalate to user with the reason and the task id
 5. **End-of-run review.** Once all tasks are `completed`:
    - Read `prompts/reviewer.md`, substitute placeholders (`{{DESIGN_PATH}}`, `{{NOTES_PATH}}`, `{{BASE_REF}}` = the commit before execute started, typically `main` or the user's pre-execute HEAD)
    - Dispatch reviewer subagent
+     - Set `model: opus` on this Agent call. The end-of-run reviewer is the safety net for the autonomous-execution promise — a missed subtle bug surfaces as user rework, so quality here follows the same principle as the implementer's critical path.
    - Reviewer auto-fixes what it can, reports blockers in the structured outcome
 6. **Auto-fix loop (cap 2):**
    - If reviewer reports M > 0 blockers: read `prompts/fixer.md`, substitute placeholders (`{{DESIGN_PATH}}`, `{{ISSUES}}` = the blocker list)
    - Dispatch fixer subagent
+     - Set `model: sonnet` on this Agent call. The fix is mechanical — it applies a named fix against a named issue from the reviewer's output; low ambiguity.
    - Re-dispatch reviewer
    - Cap at 2 fix → review iterations. After cap, escalate (see below).
 

@@ -85,6 +85,7 @@ Good — same content, restructured:
 3. **Approach selection.** Once scope is clear, propose 2–3 approaches with tradeoffs. Lead with your recommendation. User picks.
 4. **Author design.md straight through.** No per-section approval interruptions. Write to `.briskly/sessions/<YYYY-MM-DD-slug>/design.md` (create the directory if needed).
 5. **Auto plan-coherence review.** Dispatch a subagent with `prompts/plan-coherence-reviewer.md` filled in (`{{SPEC_PATH}}` replaced with the actual path).
+   - Set `model: sonnet` on this Agent call. This is a bounded structural audit against a finite checklist — a missed coherence issue is bounded, since execute surfaces it later and the user reviews the design.md before approving anyway.
 6. **Emit outcome line** to chat:
    - `plan-review: <N> issues auto-fixed, ✓ ready` (when no blockers)
    - `plan-review: <M> blocking issue(s) 🚨 <first blocker>` (when blockers exist)
