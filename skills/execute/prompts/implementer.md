@@ -107,7 +107,7 @@ Omit lines that don't apply.
 
 Return one of:
 - `DONE` — task complete, tests pass, committed
-- `DONE_WITH_CONCERNS: <description>` — done but flagged something for review attention; use this when uncertain whether your approach matches the spec's intent
+- `DONE_WITH_CONCERNS: <description>` — done but flagged something for review attention. Prefer this over `DONE` whenever the spec's intent was ambiguous, you made a meaningful judgment call the spec didn't pre-specify, or you're guessing at the right shape. The reviewer can audit specific concerns far more cheaply than reverse-engineering a wrong-feeling change after merge.
 - `BLOCKED: <reason>` — cannot proceed; explain why
 
 ## Boundaries

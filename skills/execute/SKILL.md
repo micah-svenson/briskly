@@ -92,11 +92,14 @@ Good — same content, restructured:
    - Dispatch implementer subagent with the filled prompt. **The subagent receives paths, not the spec text inline.**
      - Set `model: opus` on the Agent call by default. Briskly's promise is autonomous execution from a single design handoff — when the implementer gets a task wrong, the cost surfaces as user rework, which dwarfs the token savings of a lighter model. Quality on this path is the differentiator.
      - Set `model: sonnet` only when the task description clearly matches one of these named patterns:
-       - doc-only edits — `*.md`, README, or comment-only changes that don't alter behavior
+       - doc-only edits — README, top-level docs, or comment-only changes that don't alter behavior. Note: `skills/**/*.md`, `hooks/**`, and other behavior-defining markdown is skill source code, not docs — it does NOT qualify.
        - test additions where the implementation under test already exists
        - single-file mechanical edits — rename, import-path update, format-only
        - pure dependency or config bumps
      - When a task does not clearly match the allowlist, default to Opus. The allowlist is the contract; "feels simple" is not a pattern on it.
+     - Concrete calibration:
+       - Match → Sonnet: "Bump axios from 1.6 to 1.7" (pure dep bump), "Add a docstring to `summarize_run`" (comment-only).
+       - No-match → Opus: "Refactor session handling to use the new auth middleware" (multi-file architectural), "Add the rate-limit field to the API response and wire it through the client" (cross-cutting).
    - On `DONE` or `DONE_WITH_CONCERNS`: mark TodoWrite `completed`, proceed to next task
    - On `BLOCKED`: pause, escalate to user with the reason and the task id
 5. **End-of-run review.** Once all tasks are `completed`:
